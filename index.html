@@ -674,6 +674,7 @@ let running = false;
 let paused = false;
 let score = 0;
 let nextUpgradeAt = 200;
+let upgradeStep = 200;
 let lastTime = 0;
 let spawnTimer = 0;
 let elapsed = 0;
@@ -707,7 +708,7 @@ let enemies = [];
 let particles = [];
 
 function resetGame() {
-  score = 0; nextUpgradeAt = 200; elapsed = 0; spawnTimer = 0;
+  score = 0; nextUpgradeAt = 200; upgradeStep = 200; elapsed = 0; spawnTimer = 0;
   bullets = []; enemyBullets = []; enemies = []; particles = []; items = [];
   boss = null; nextBossAt = 1000;
   bossBarWrap.classList.add('hidden');
@@ -1080,7 +1081,11 @@ function update(dt) {
   scoreVal.textContent = Math.floor(score);
 
   // marco de upgrade
-  if (score >= nextUpgradeAt) { nextUpgradeAt += 200; triggerUpgrade(); }
+  if (score >= nextUpgradeAt) {
+    upgradeStep += 500;
+    nextUpgradeAt += upgradeStep;
+    triggerUpgrade();
+  }
 
   // game over
   if (player.hp <= 0) endGame();
