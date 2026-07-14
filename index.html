@@ -186,6 +186,57 @@
     position: fixed; bottom: 0; left: 0; right: 0; height: 40%;
     z-index: 5; touch-action: none;
   }
+
+  /* ---------- Loja ---------- */
+  .btn-secondary {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--amber);
+    border: 2px solid var(--amber);
+    cursor: pointer;
+    letter-spacing: 2px;
+  }
+  .btn-secondary:active { transform: translateY(2px); }
+
+  #shopOverlay {
+    position: fixed; inset: 0;
+    background: rgba(6,8,12,0.96);
+    display: flex; flex-direction: column; align-items: center;
+    z-index: 110; gap: 14px; padding: 24px 16px;
+    overflow-y: auto;
+  }
+  #shopHeader { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  #shopCurrency { font-size: 13px; color: var(--amber); letter-spacing: 2px; }
+  #shopTabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .shop-tab {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;
+    letter-spacing: 1px; padding: 8px 14px; background: var(--hive);
+    color: var(--text-dim); border: 2px solid #2A3444; cursor: pointer;
+  }
+  .shop-tab.active { color: var(--void); background: var(--swarm); border-color: var(--swarm); }
+
+  #shopGrid { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; max-width: 900px; padding-bottom: 12px; }
+  .shop-card {
+    width: 170px; min-height: 170px;
+    background: var(--hive); border: 2px solid #2A3444;
+    padding: 14px; display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center;
+  }
+  .shop-card.equipped { border-color: var(--bio); box-shadow: 0 0 14px -2px rgba(57,255,136,0.4); }
+  .shop-swatch { width: 46px; height: 46px; border-radius: 50%; }
+  .shop-item-name { font-size: 11px; font-weight: 800; color: var(--text); }
+  .shop-price { font-size: 10px; color: var(--amber); }
+  .shop-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800; letter-spacing: 1px;
+    padding: 8px 10px; width: 100%; cursor: pointer; border: none; margin-top: auto;
+  }
+  .shop-btn.buy { background: var(--swarm); color: #fff; }
+  .shop-btn.equip { background: var(--hive); color: var(--bio); border: 2px solid var(--bio); }
+  .shop-btn.equipped-label { background: var(--bio); color: var(--void); cursor: default; }
+  .shop-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #closeShopBtn { margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -221,19 +272,33 @@
 <div id="startOverlay" class="overlay">
   <div class="title pixel">ENXAME</div>
   <div class="subtitle">A colônia acorda. Pilote o coletor, abata os intrusos, evolua a cada onda. Arraste (mobile) ou use o mouse/setas para mover — o tiro é automático. Inimigos derrotados podem soltar cura ou bomba (tecla E ou botão 💣): contra o chefe causa dano massivo, contra o resto limpa a tela.</div>
+  <div id="startCurrency" class="shop-price"></div>
   <button class="btn" id="startBtn">INICIAR</button>
+  <button class="btn-secondary" id="openShopBtn">LOJA</button>
 </div>
 
 <div id="gameOverOverlay" class="overlay hidden">
   <div class="title pixel" style="color: var(--blood); text-shadow: 0 0 20px rgba(255,71,87,0.6);">COLÔNIA CAÍDA</div>
   <div id="finalScore" class="pixel"></div>
+  <div id="earnedCurrency" class="shop-price"></div>
   <button class="btn" id="retryBtn">TENTAR NOVAMENTE</button>
+  <button class="btn-secondary" id="openShopBtn2">LOJA</button>
 </div>
 
 <div id="upgradeOverlay" class="hidden">
   <div id="upgradeTitle" class="pixel">EVOLUÇÃO</div>
   <div id="upgradeSub">ESCOLHA UM PODER</div>
   <div id="cardRow"></div>
+</div>
+
+<div id="shopOverlay" class="hidden">
+  <div id="shopHeader">
+    <div class="title pixel" style="font-size: 20px;">LOJA</div>
+    <div id="shopCurrency">✦ 0 ESSÊNCIA</div>
+    <div id="shopTabs"></div>
+  </div>
+  <div id="shopGrid"></div>
+  <button class="btn-secondary" id="closeShopBtn">FECHAR</button>
 </div>
 
 <script>
@@ -359,6 +424,206 @@ const CARD_POOL = {
 const rng = new LootRNG(CARD_POOL);
 const pickedFamilies = {}; // conta upgrades por família -> gatilho 'secreto'
 let noDamageTimer = 0;     // tempo sem tomar dano -> gatilho 'divino'
+
+/* ============================================================
+   2.5) LOJA DE COSMÉTICOS (só visual/sonoro, sem efeito de jogo)
+   Observação: moeda e itens comprados existem só durante esta sessão
+   (o jogo roda como arquivo local, sem armazenamento entre visitas).
+   ============================================================ */
+const SHOP_ITEMS = {
+  nave: [
+    { id: 'nave_padrao',  name: 'Coletor Padrão', price: 0,   colors: { c1: '#C9D3E0', c2: '#7C4DFF', c3: '#39FF88' } },
+    { id: 'nave_bio',     name: 'Bio Verde',      price: 80,  colors: { c1: '#DFFFEA', c2: '#1FAE5C', c3: '#39FF88' } },
+    { id: 'nave_nebula',  name: 'Rosa Nebula',    price: 120, colors: { c1: '#FFD9F0', c2: '#D6409F', c3: '#F472B6' } },
+    { id: 'nave_dourada', name: 'Dourada Real',   price: 220, colors: { c1: '#FFF3D0', c2: '#C9971F', c3: '#FBBF24' } },
+    { id: 'nave_ciano',   name: 'Ciano Elétrico', price: 150, colors: { c1: '#D8FBFF', c2: '#0E9BAE', c3: '#22D3EE' } },
+  ],
+  chefe: [
+    { id: 'chefe_padrao',   name: 'Nave-Mãe Padrão', price: 0,   colors: { main: '#FB923C', core: '#F472B6' } },
+    { id: 'chefe_sombrio',  name: 'Sombrio',         price: 150, colors: { main: '#6D28D9', core: '#A855F7' } },
+    { id: 'chefe_infernal', name: 'Infernal',        price: 180, colors: { main: '#DC2626', core: '#FF8A5B' } },
+    { id: 'chefe_glacial',  name: 'Glacial',         price: 180, colors: { main: '#38BDF8', core: '#E0F2FE' } },
+  ],
+  fundo: [
+    { id: 'fundo_padrao',    name: 'Vazio Padrão',   price: 0,   grad: 'rgba(124,77,255,0.08)', base: '#0A0E14' },
+    { id: 'fundo_nebulosa',  name: 'Nebulosa Roxa',  price: 100, grad: 'rgba(168,85,247,0.20)', base: '#120A1F' },
+    { id: 'fundo_verde',     name: 'Grade Verde',    price: 100, grad: 'rgba(57,255,136,0.14)', base: '#081410' },
+    { id: 'fundo_alerta',    name: 'Vermelho Alerta',price: 130, grad: 'rgba(255,71,87,0.16)',  base: '#1A0808' },
+  ],
+  tiro: [
+    { id: 'tiro_classico', name: 'Laser Clássico', price: 0,  wave: 'square',   freq: 880,  dur: 0.06 },
+    { id: 'tiro_grave',    name: 'Pulso Grave',    price: 60, wave: 'sawtooth', freq: 220,  dur: 0.08 },
+    { id: 'tiro_agudo',    name: 'Chiado Agudo',   price: 60, wave: 'triangle', freq: 1600, dur: 0.04 },
+  ],
+  morte: [
+    { id: 'morte_curta',    name: 'Explosão Curta', price: 0,  kind: 'noise-low',  dur: 0.18 },
+    { id: 'morte_estatico', name: 'Estático',       price: 70, kind: 'noise-high', dur: 0.22 },
+    { id: 'morte_grave',    name: 'Baque Grave',    price: 70, kind: 'sine-drop',  dur: 0.30 },
+  ],
+  musica: [
+    { id: 'musica_silencio', name: 'Silêncio',       price: 0 },
+    { id: 'musica_ambiente', name: 'Synth Ambiente', price: 100, notes: [220, 262, 196, 247], tempo: 0.55, wave: 'sine' },
+    { id: 'musica_rapida',   name: 'Batida Rápida',  price: 140, notes: [330, 392, 294, 349, 262, 330, 392, 440], tempo: 0.22, wave: 'square' },
+  ],
+};
+const SHOP_CATEGORY_LABELS = { nave: 'NAVES', chefe: 'CHEFE', fundo: 'FUNDO', tiro: 'TIRO', morte: 'MORTE', musica: 'MÚSICA' };
+
+let essencia = 0;
+const owned = {
+  nave: ['nave_padrao'], chefe: ['chefe_padrao'], fundo: ['fundo_padrao'],
+  tiro: ['tiro_classico'], morte: ['morte_curta'], musica: ['musica_silencio'],
+};
+const equipped = {
+  nave: 'nave_padrao', chefe: 'chefe_padrao', fundo: 'fundo_padrao',
+  tiro: 'tiro_classico', morte: 'morte_curta', musica: 'musica_silencio',
+};
+function getEquippedItem(cat) { return SHOP_ITEMS[cat].find(i => i.id === equipped[cat]); }
+
+/* ---------- Áudio procedural (sem arquivos externos) ---------- */
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playShootSound() {
+  const item = getEquippedItem('tiro');
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = item.wave; osc.frequency.value = item.freq;
+  gain.gain.setValueAtTime(0.05, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + item.dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + item.dur);
+}
+function playDeathSound() {
+  const item = getEquippedItem('morte');
+  const ctx = getAudioCtx();
+  if (item.kind === 'sine-drop') {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(320, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + item.dur);
+    gain.gain.setValueAtTime(0.14, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + item.dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + item.dur);
+  } else {
+    const size = Math.floor(ctx.sampleRate * item.dur);
+    const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size);
+    const noise = ctx.createBufferSource(); noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = item.kind === 'noise-high' ? 'highpass' : 'lowpass';
+    filter.frequency.value = item.kind === 'noise-high' ? 2200 : 700;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.16, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + item.dur);
+    noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    noise.start();
+  }
+}
+let musicTimer = null, musicStep = 0;
+function startMusic() {
+  stopMusic();
+  const item = getEquippedItem('musica');
+  if (!item.notes) return;
+  const ctx = getAudioCtx();
+  musicStep = 0;
+  const playStep = () => {
+    const freq = item.notes[musicStep % item.notes.length];
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = item.wave; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.035, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + item.tempo * 0.9);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + item.tempo);
+    musicStep++;
+  };
+  playStep();
+  musicTimer = setInterval(playStep, item.tempo * 1000);
+}
+function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
+
+/* ---------- Fundo do canvas equipado ---------- */
+function applyBackgroundSkin() {
+  const item = getEquippedItem('fundo');
+  canvas.style.background =
+    `radial-gradient(ellipse at 50% 0%, ${item.grad}, transparent 60%),` +
+    `repeating-linear-gradient(120deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px),` +
+    `repeating-linear-gradient(60deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 42px),` +
+    `${item.base}`;
+}
+
+/* ---------- UI da loja ---------- */
+const shopOverlay = document.getElementById('shopOverlay');
+const shopCurrencyEl = document.getElementById('shopCurrency');
+const shopTabsEl = document.getElementById('shopTabs');
+const shopGridEl = document.getElementById('shopGrid');
+const startCurrencyEl = document.getElementById('startCurrency');
+let activeShopTab = 'nave';
+
+function swatchStyle(cat, item) {
+  if (cat === 'nave') return item.colors.c2;
+  if (cat === 'chefe') return item.colors.main;
+  if (cat === 'fundo') return item.base;
+  return '#161C28';
+}
+function renderShop() {
+  shopCurrencyEl.textContent = `✦ ${essencia} ESSÊNCIA`;
+  startCurrencyEl.textContent = `✦ ${essencia} ESSÊNCIA`;
+  shopTabsEl.innerHTML = '';
+  Object.keys(SHOP_ITEMS).forEach(cat => {
+    const tab = document.createElement('div');
+    tab.className = 'shop-tab' + (cat === activeShopTab ? ' active' : '');
+    tab.textContent = SHOP_CATEGORY_LABELS[cat];
+    tab.onclick = () => { activeShopTab = cat; renderShop(); };
+    shopTabsEl.appendChild(tab);
+  });
+  shopGridEl.innerHTML = '';
+  SHOP_ITEMS[activeShopTab].forEach(item => {
+    const isOwned = owned[activeShopTab].includes(item.id);
+    const isEquipped = equipped[activeShopTab] === item.id;
+    const card = document.createElement('div');
+    card.className = 'shop-card' + (isEquipped ? ' equipped' : '');
+    const hasAudioPreview = activeShopTab === 'tiro' || activeShopTab === 'morte' || activeShopTab === 'musica';
+    card.innerHTML = `
+      <div class="shop-swatch" style="background:${swatchStyle(activeShopTab, item)}; box-shadow: 0 0 14px -2px ${swatchStyle(activeShopTab, item)};"></div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-price">${item.price === 0 ? 'GRÁTIS' : '✦ ' + item.price}</div>
+      ${hasAudioPreview ? `<button class="shop-btn equip" data-action="preview">OUVIR</button>` : ''}
+      <button class="shop-btn ${isEquipped ? 'equipped-label' : isOwned ? 'equip' : 'buy'}" data-action="${isEquipped ? 'none' : isOwned ? 'equip' : 'buy'}" ${!isOwned && essencia < item.price ? 'disabled' : ''}>
+        ${isEquipped ? 'EQUIPADO' : isOwned ? 'EQUIPAR' : 'COMPRAR'}
+      </button>
+    `;
+    card.querySelectorAll('button').forEach(btn => {
+      const action = btn.dataset.action;
+      btn.onclick = () => {
+        if (action === 'preview') {
+          if (activeShopTab === 'tiro') { const prev = equipped.tiro; equipped.tiro = item.id; playShootSound(); equipped.tiro = prev; }
+          if (activeShopTab === 'morte') { const prev = equipped.morte; equipped.morte = item.id; playDeathSound(); equipped.morte = prev; }
+          if (activeShopTab === 'musica') { const prev = equipped.musica; equipped.musica = item.id; startMusic(); setTimeout(() => { equipped.musica = prev; stopMusic(); }, 1600); }
+        } else if (action === 'buy' && essencia >= item.price) {
+          essencia -= item.price;
+          owned[activeShopTab].push(item.id);
+          equipped[activeShopTab] = item.id;
+          if (activeShopTab === 'fundo') applyBackgroundSkin();
+          renderShop();
+        } else if (action === 'equip') {
+          equipped[activeShopTab] = item.id;
+          if (activeShopTab === 'fundo') applyBackgroundSkin();
+          if (activeShopTab === 'musica' && musicTimer) startMusic();
+          renderShop();
+        }
+      };
+    });
+    shopGridEl.appendChild(card);
+  });
+}
+function openShop() { renderShop(); shopOverlay.classList.remove('hidden'); }
+document.getElementById('openShopBtn').onclick = openShop;
+document.getElementById('openShopBtn2').onclick = openShop;
+document.getElementById('closeShopBtn').onclick = () => shopOverlay.classList.add('hidden');
 
 /* ============================================================
    3) SETUP DE CANVAS E ESTADO
@@ -534,6 +799,7 @@ function maybeDropItem(x, y) {
    6) LOOP PRINCIPAL
    ============================================================ */
 function shoot() {
+  playShootSound();
   const spread = player.multishot;
   const baseAngle = -Math.PI / 2;
   const spreadArc = Math.min(0.14 * (spread - 1), 0.6);
@@ -718,6 +984,7 @@ function update(dt) {
     score += en.scoreVal;
     spawnParticles(en.x, en.y, en.color, 12);
     maybeDropItem(en.x, en.y);
+    playDeathSound();
   });
   enemies = enemies.filter(en => en.hp > 0);
 
@@ -743,6 +1010,7 @@ function update(dt) {
     if (boss.hp <= 0) {
       score += boss.scoreVal;
       spawnParticles(boss.x, boss.y, '#FB923C', 60);
+      playDeathSound();
       items.push({ type: 'cura', x: boss.x - 20, y: boss.y, vy: 70, life: 8 });
       items.push({ type: 'bomba', x: boss.x + 20, y: boss.y, vy: 70, life: 8 });
       boss = null;
@@ -800,8 +1068,9 @@ function update(dt) {
 
 /* ---------- Desenho de naves (vetorial, sem sprites externos) ---------- */
 function drawPlayerShip(ctx, w, h, shielded) {
-  const c1 = '#C9D3E0', c2 = '#7C4DFF', c3 = '#39FF88';
-  ctx.shadowColor = '#7C4DFF'; ctx.shadowBlur = 16;
+  const skin = getEquippedItem('nave').colors;
+  const c1 = skin.c1, c2 = skin.c2, c3 = skin.c3;
+  ctx.shadowColor = c2; ctx.shadowBlur = 16;
 
   // chama do motor
   const flick = 0.7 + Math.random() * 0.3;
@@ -909,9 +1178,10 @@ function drawEnemyShip(ctx, type, w, h, color) {
 }
 
 function drawBossShip(ctx, w, h, phase) {
+  const skin = getEquippedItem('chefe').colors;
   const glow = 0.7 + Math.sin(phase * 4) * 0.3;
-  ctx.shadowColor = '#FB923C'; ctx.shadowBlur = 20 * glow;
-  ctx.fillStyle = '#FB923C';
+  ctx.shadowColor = skin.main; ctx.shadowBlur = 20 * glow;
+  ctx.fillStyle = skin.main;
   ctx.beginPath();
   ctx.moveTo(0, -h * 0.5);
   ctx.lineTo(w * 0.5, -h * 0.1);
@@ -925,7 +1195,7 @@ function drawBossShip(ctx, w, h, phase) {
   ctx.fillStyle = 'rgba(0,0,0,0.3)';
   ctx.fillRect(-w * 0.4, -h * 0.02, w * 0.8, h * 0.14);
 
-  ctx.fillStyle = '#F472B6';
+  ctx.fillStyle = skin.core;
   ctx.shadowBlur = 10 * glow;
   ctx.beginPath(); ctx.ellipse(0, h * 0.08, w * 0.14, h * 0.18, 0, 0, 7); ctx.fill();
 
@@ -1021,7 +1291,11 @@ function draw() {
 
 function endGame() {
   running = false;
+  stopMusic();
+  const earned = Math.floor(score / 8);
+  essencia += earned;
   finalScoreEl.textContent = `PONTUAÇÃO: ${Math.floor(score)}`;
+  document.getElementById('earnedCurrency').textContent = `+ ${earned} ✦ ESSÊNCIA`;
   gameOverOverlay.classList.remove('hidden');
   hud.classList.add('hidden'); centerTop.classList.add('hidden'); joystickZone.classList.add('hidden');
   bombBtn.classList.add('hidden'); bossBarWrap.classList.add('hidden');
@@ -1043,14 +1317,17 @@ document.getElementById('startBtn').onclick = () => {
   startOverlay.classList.add('hidden');
   hud.classList.remove('hidden'); centerTop.classList.remove('hidden'); joystickZone.classList.remove('hidden'); bombBtn.classList.remove('hidden');
   resetGame(); running = true; paused = false; lastTime = performance.now();
+  startMusic();
   requestAnimationFrame(loop);
 };
 document.getElementById('retryBtn').onclick = () => {
   gameOverOverlay.classList.add('hidden');
   hud.classList.remove('hidden'); centerTop.classList.remove('hidden'); joystickZone.classList.remove('hidden'); bombBtn.classList.remove('hidden');
   resetGame(); running = true; paused = false; lastTime = performance.now();
+  startMusic();
   requestAnimationFrame(loop);
 };
+startCurrencyEl.textContent = `✦ ${essencia} ESSÊNCIA`;
 </script>
 </body>
 </html>
