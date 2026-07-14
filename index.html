@@ -546,6 +546,24 @@ function startMusic() {
 function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
 
 /* ---------- Fundo do canvas equipado ---------- */
+const SAVE_KEY = 'corredor-espacial-save';
+function saveState() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ essencia, owned, equipped }));
+  } catch (e) { console.warn('Não foi possível salvar o progresso:', e); }
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (typeof data.essencia === 'number') essencia = data.essencia;
+    if (data.owned) Object.keys(owned).forEach(cat => { if (Array.isArray(data.owned[cat])) owned[cat] = data.owned[cat]; });
+    if (data.equipped) Object.keys(equipped).forEach(cat => { if (data.equipped[cat]) equipped[cat] = data.equipped[cat]; });
+  } catch (e) { console.warn('Não foi possível carregar o progresso:', e); }
+}
+loadState();
+
 function applyBackgroundSkin() {
   const item = getEquippedItem('fundo');
   canvas.style.background =
@@ -608,11 +626,13 @@ function renderShop() {
           owned[activeShopTab].push(item.id);
           equipped[activeShopTab] = item.id;
           if (activeShopTab === 'fundo') applyBackgroundSkin();
+          saveState();
           renderShop();
         } else if (action === 'equip') {
           equipped[activeShopTab] = item.id;
           if (activeShopTab === 'fundo') applyBackgroundSkin();
           if (activeShopTab === 'musica' && musicTimer) startMusic();
+          saveState();
           renderShop();
         }
       };
@@ -1294,6 +1314,7 @@ function endGame() {
   stopMusic();
   const earned = Math.floor(score / 8);
   essencia += earned;
+  saveState();
   finalScoreEl.textContent = `PONTUAÇÃO: ${Math.floor(score)}`;
   document.getElementById('earnedCurrency').textContent = `+ ${earned} ✦ ESSÊNCIA`;
   gameOverOverlay.classList.remove('hidden');
