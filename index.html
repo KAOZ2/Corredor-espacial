@@ -1604,4 +1604,177 @@ function drawBossShip(ctx, w, h, phase) {
   ctx.shadowBlur = 10 * glow;
   ctx.beginPath(); ctx.ellipse(0, h * 0.08, w * 0.14, h * 0.18, 0, 0, 7); ctx.fill();
 
-  ctx.fillStyle = '#0A0E
+  ctx.fillStyle = '#0A0E14';
+  ctx.beginPath(); ctx.arc(-w * 0.34, h * 0.1, w * 0.06, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(w * 0.34, h * 0.1, w * 0.06, 0, 7); ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawItem(ctx, it) {
+  ctx.save();
+  ctx.translate(it.x, it.y);
+  if (it.type === 'cura') {
+    ctx.shadowColor = '#39FF88'; ctx.shadowBlur = 10;
+    ctx.fillStyle = '#161C28';
+    ctx.beginPath(); ctx.arc(0, 0, 11, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#39FF88'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#39FF88';
+    ctx.fillRect(-6, -1.5, 12, 3);
+    ctx.fillRect(-1.5, -6, 3, 12);
+  } else {
+    ctx.shadowColor = '#FFB84D'; ctx.shadowBlur = 10;
+    ctx.fillStyle = '#161C28';
+    ctx.beginPath(); ctx.arc(0, 0, 11, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#FFB84D'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#FFB84D';
+    ctx.font = '12px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('B', 0, 1);
+  }
+  ctx.restore();
+  ctx.shadowBlur = 0;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // inimigos — naves
+  enemies.forEach(en => {
+    ctx.save();
+    ctx.translate(en.x, en.y);
+    ctx.rotate(Math.PI); // vindo de cima, nariz aponta para baixo
+    drawEnemyShip(ctx, en.type, en.w, en.h, en.color);
+    ctx.restore();
+    // barra de vida
+    if (en.hp < en.maxHp) {
+      ctx.fillStyle = '#000'; ctx.fillRect(en.x - en.w/2, en.y - en.h/2 - 8, en.w, 3);
+      ctx.fillStyle = en.color; ctx.fillRect(en.x - en.w/2, en.y - en.h/2 - 8, en.w * (en.hp/en.maxHp), 3);
+    }
+  });
+
+  // chefe
+  if (boss) {
+    ctx.save();
+    ctx.translate(boss.x, boss.y);
+    drawBossShip(ctx, boss.w, boss.h, boss.phase);
+    ctx.restore();
+  }
+
+  // itens dropados
+  items.forEach(it => drawItem(ctx, it));
+
+  // balas
+  ctx.fillStyle = '#39FF88'; ctx.shadowColor = '#39FF88'; ctx.shadowBlur = 8;
+  bullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, 3, 0, 7); ctx.fill(); });
+  ctx.fillStyle = '#FF4757'; ctx.shadowColor = '#FF4757';
+  enemyBullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, 7); ctx.fill(); });
+  ctx.shadowBlur = 0;
+
+  // particulas
+  particles.forEach(p => { ctx.globalAlpha = Math.max(0, p.life / 0.5); ctx.fillStyle = p.color; ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); });
+  ctx.globalAlpha = 1;
+
+  // player — nave
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  drawPlayerShip(ctx, player.w, player.h, player.shieldCharges > 0);
+  ctx.restore();
+  ctx.shadowBlur = 0;
+
+  // drones/clones visuais
+  for (let d = 0; d < player.drones; d++) {
+    const ox = (d % 2 === 0 ? -1 : 1) * (26 + 14 * Math.floor(d / 2));
+    ctx.fillStyle = '#A855F7'; ctx.beginPath(); ctx.arc(player.x + ox, player.y, 5, 0, 7); ctx.fill();
+  }
+  for (let c = 0; c < player.clones; c++) {
+    const ox = (c % 2 === 0 ? -1 : 1) * (60 + 20 * Math.floor(c / 2));
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = '#F472B6';
+    ctx.beginPath(); ctx.moveTo(player.x + ox, player.y - 10); ctx.lineTo(player.x + ox + 10, player.y + 10); ctx.lineTo(player.x + ox - 10, player.y + 10); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function formatTime(sec) {
+  const s = Math.floor(sec);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${r < 10 ? '0' : ''}${r}`;
+}
+
+function renderStatsPanel() {
+  const totalKills = stats.kills.mosquito + stats.kills.besouro + stats.kills.vespa;
+  const rows = [
+    { label: 'MELHOR PONTUAÇÃO', val: highScore, cls: 'gold' },
+    { label: 'TEMPO SOBREVIVIDO', val: formatTime(stats.timeSurvived), cls: 'hl' },
+    { label: 'ONDA MÁXIMA', val: stats.maxWave, cls: 'hl' },
+    { label: 'INIMIGOS ABATIDOS', val: totalKills, cls: '' },
+    { label: 'CHEFES DERROTADOS', val: stats.bossesKilled, cls: 'hl' },
+    { label: 'MOSQUITOS / BESOUROS / VESPAS', val: `${stats.kills.mosquito} / ${stats.kills.besouro} / ${stats.kills.vespa}`, cls: '' },
+    { label: 'EVOLUÇÕES ESCOLHIDAS', val: stats.upgradesCollected, cls: '' },
+    { label: 'ITENS COLETADOS', val: stats.itemsCollected, cls: '' },
+    { label: 'BOMBAS USADAS', val: stats.bombsUsed, cls: '' },
+    { label: 'DANO SOFRIDO', val: Math.floor(stats.damageTaken), cls: 'dmg' },
+  ];
+  statsPanel.innerHTML = rows.map(r => `
+    <div class="stat-box ${r.cls}">
+      <div class="stat-box-label">${r.label}</div>
+      <div class="stat-box-val">${r.val}</div>
+    </div>
+  `).join('');
+}
+
+function endGame() {
+  running = false;
+  userPaused = false;
+  pauseOverlay.classList.add('hidden');
+  stopMusic();
+  playGameOverSound();
+  const earned = Math.floor(score / 8);
+  essencia += earned;
+  const finalScoreNum = Math.floor(score);
+  const isNewRecord = finalScoreNum > highScore;
+  if (isNewRecord) highScore = finalScoreNum;
+  saveState();
+  finalScoreEl.textContent = `PONTUAÇÃO: ${finalScoreNum}`;
+  document.getElementById('earnedCurrency').textContent = `+ ${earned} ✦ ESSÊNCIA`;
+  recordBadge.classList.toggle('hidden', !isNewRecord);
+  renderStatsPanel();
+  gameOverOverlay.classList.remove('hidden');
+  hud.classList.add('hidden'); centerTop.classList.add('hidden'); joystickZone.classList.add('hidden');
+  bombBtn.classList.add('hidden'); bossBarWrap.classList.add('hidden');
+  topControls.classList.add('hidden'); volumePanel.classList.add('hidden');
+}
+
+function loop(t) {
+  if (!running) return;
+  const dt = Math.min((t - lastTime) / 1000, 0.05);
+  lastTime = t;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+/* ============================================================
+   7) BOTÕES
+   ============================================================ */
+document.getElementById('startBtn').onclick = () => {
+  startOverlay.classList.add('hidden');
+  hud.classList.remove('hidden'); centerTop.classList.remove('hidden'); joystickZone.classList.remove('hidden'); bombBtn.classList.remove('hidden');
+  topControls.classList.remove('hidden');
+  resetGame(); running = true; paused = false; userPaused = false; lastTime = performance.now();
+  startMusic();
+  requestAnimationFrame(loop);
+};
+document.getElementById('retryBtn').onclick = () => {
+  gameOverOverlay.classList.add('hidden');
+  hud.classList.remove('hidden'); centerTop.classList.remove('hidden'); joystickZone.classList.remove('hidden'); bombBtn.classList.remove('hidden');
+  topControls.classList.remove('hidden');
+  resetGame(); running = true; paused = false; userPaused = false; lastTime = performance.now();
+  startMusic();
+  requestAnimationFrame(loop);
+};
+startCurrencyEl.textContent = `✦ ${essencia} ESSÊNCIA`;
+startHighScoreEl.textContent = `MELHOR PONTUAÇÃO: ${highScore}`;
+</script>
+</body>
+</html>
