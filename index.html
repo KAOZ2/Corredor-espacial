@@ -561,6 +561,7 @@ const SHOP_ITEMS = {
     { id: 'nave_ciano',   name: 'Ciano Elétrico', price: 150, colors: { c1: '#D8FBFF', c2: '#0E9BAE', c3: '#22D3EE' } },
     { id: 'nave_nostromo', name: 'USCSS Nostromo', exclusive: true, code: 'OITAVOPASSAGEIRO', colors: { c1: '#E5E0D3', c2: '#5C6670', c3: '#F5B942' } },
     { id: 'nave_c137', name: 'Disco C-137', exclusive: true, code: 'DIMENSAOC137', colors: { c1: '#D8CFBE', c2: '#5C554C', c3: '#E8B93A' } },
+    { id: 'nave_jipe', name: 'Explorer do Parque', exclusive: true, code: 'ALLANGRANT', colors: { c1: '#8FBE6E', c2: '#8B2E2E', c3: '#E8B23A' } },
   ],
   chefe: [
     { id: 'chefe_padrao',   name: 'Nave-Mãe Padrão', price: 0,   colors: { main: '#FB923C', core: '#F472B6' } },
@@ -1677,11 +1678,89 @@ function drawC137Ship(ctx, w, h, skin, shielded) {
   ctx.shadowBlur = 0;
 }
 
+function drawJipeShip(ctx, w, h, skin, shielded) {
+  const c1 = skin.c1, c2 = skin.c2, c3 = skin.c3;
+  ctx.shadowColor = c2; ctx.shadowBlur = 10;
+
+  // rastro do escapamento (traseira)
+  const flick = 0.7 + Math.random() * 0.3;
+  ctx.fillStyle = '#FF8A3D';
+  ctx.beginPath();
+  ctx.moveTo(-w * 0.08, h * 0.56);
+  ctx.lineTo(0, h * 0.56 + h * 0.2 * flick);
+  ctx.lineTo(w * 0.08, h * 0.56);
+  ctx.closePath(); ctx.fill();
+
+  // rodas (visão de cima)
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#1A1A1A';
+  [[-w * 0.32, -h * 0.32], [w * 0.32, -h * 0.32], [-w * 0.32, h * 0.32], [w * 0.32, h * 0.32]].forEach(([wx, wy]) => {
+    ctx.fillRect(wx - w * 0.06, wy - h * 0.1, w * 0.12, h * 0.2);
+  });
+
+  // carroceria (verde)
+  ctx.fillStyle = c1;
+  ctx.shadowColor = c2; ctx.shadowBlur = 6;
+  ctx.beginPath();
+  ctx.moveTo(-w * 0.28, -h * 0.55);
+  ctx.lineTo(w * 0.28, -h * 0.55);
+  ctx.lineTo(w * 0.34, -h * 0.1);
+  ctx.lineTo(w * 0.3, h * 0.5);
+  ctx.lineTo(-w * 0.3, h * 0.5);
+  ctx.lineTo(-w * 0.34, -h * 0.1);
+  ctx.closePath(); ctx.fill();
+
+  // listras "tigre" (capô)
+  ctx.strokeStyle = c2;
+  ctx.lineWidth = w * 0.045;
+  ctx.shadowBlur = 0;
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * w * 0.11 - w * 0.05, -h * 0.5);
+    ctx.lineTo(i * w * 0.11 + w * 0.05, -h * 0.15);
+    ctx.stroke();
+  }
+
+  // capota (teto vermelho/bordô) com bagageiro
+  ctx.fillStyle = c2;
+  ctx.fillRect(-w * 0.24, -h * 0.14, w * 0.48, h * 0.42);
+  ctx.fillStyle = c1;
+  ctx.globalAlpha = 0.9;
+  ctx.fillRect(-w * 0.19, -h * 0.08, w * 0.38, h * 0.3);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = c2; ctx.lineWidth = 1.5;
+  ctx.strokeRect(-w * 0.22, -h * 0.19, w * 0.44, w * 0.08);
+
+  // parachoque e detalhes amarelos
+  ctx.fillStyle = c3;
+  ctx.fillRect(-w * 0.3, -h * 0.58, w * 0.6, h * 0.08);
+  ctx.fillRect(-w * 0.32, h * 0.4, w * 0.64, h * 0.1);
+  ctx.beginPath(); ctx.ellipse(-w * 0.2, -h * 0.5, w * 0.05, h * 0.03, 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(w * 0.2, -h * 0.5, w * 0.05, h * 0.03, 0, 0, 7); ctx.fill();
+
+  // para-brisa
+  ctx.fillStyle = '#0A0E14';
+  ctx.beginPath();
+  ctx.ellipse(0, -h * 0.05, w * 0.15, h * 0.12, 0, 0, 7);
+  ctx.fill();
+
+  if (shielded) {
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#38BDF8'; ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.arc(0, 0, w * 0.9, 0, 7);
+    ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+}
+
 function drawPlayerShip(ctx, w, h, shielded) {
   const naveItem = getEquippedItem('nave');
   const skin = naveItem.colors;
   if (naveItem.id === 'nave_nostromo') { drawNostromoShip(ctx, w, h, skin, shielded); return; }
   if (naveItem.id === 'nave_c137') { drawC137Ship(ctx, w, h, skin, shielded); return; }
+  if (naveItem.id === 'nave_jipe') { drawJipeShip(ctx, w, h, skin, shielded); return; }
   const c1 = skin.c1, c2 = skin.c2, c3 = skin.c3;
   ctx.shadowColor = c2; ctx.shadowBlur = 16;
 
