@@ -508,38 +508,62 @@ const CARD_POOL = {
     { id: 'dano1', name: 'Ferrão Afiado', family: 'Ofensivo', icon: '⚔', desc: '+2 de dano por tiro.', apply: p => p.damage += 2 },
     { id: 'vel1', name: 'Élitros Rápidos', family: 'Mobilidade', icon: '⚡', desc: '+15% de velocidade.', apply: p => p.speed *= 1.15 },
     { id: 'cad1', name: 'Batida de Asas', family: 'Ofensivo', icon: '🎯', desc: '+10% de cadência de tiro.', apply: p => p.fireRate *= 1.10 },
+    { id: 'cad2', name: 'Reflexo de Presa', family: 'Ofensivo', icon: '🎯', desc: '+8% de cadência de tiro.', apply: p => p.fireRate *= 1.08 },
+    { id: 'dano2', name: 'Casca Pontuda', family: 'Ofensivo', icon: '🔱', desc: '+1 de dano por tiro.', apply: p => p.damage += 1 },
+    { id: 'hp0', name: 'Membrana Reforçada', family: 'Defensivo', icon: '🩹', desc: '+8 de vida máxima.', apply: p => { p.maxHp += 8; p.hp += 8; } },
   ],
   incomum: [
     { id: 'multi1', name: 'Tiro Duplo', family: 'Ofensivo', icon: '⋔', desc: '+1 projétil por disparo.', apply: p => p.multishot += 1 },
     { id: 'hp1', name: 'Exoesqueleto', family: 'Defensivo', icon: '🛡', desc: '+15 de vida máxima.', apply: p => { p.maxHp += 15; p.hp += 15; } },
     { id: 'regen1', name: 'Regeneração Larval', family: 'Defensivo', icon: '♥', desc: 'Regenera 1 vida a cada 4s.', apply: p => p.regen += 0.25 },
+    { id: 'dano3', name: 'Mordida Reforçada', family: 'Ofensivo', icon: '⚔', desc: '+15% de dano.', apply: p => p.damage *= 1.15 },
+    { id: 'vel2', name: 'Voo Ágil', family: 'Mobilidade', icon: '💨', desc: '+18% de velocidade.', apply: p => p.speed *= 1.18 },
+    { id: 'cura1', name: 'Casulo Curativo', family: 'Defensivo', icon: '🩸', desc: 'Cura 20 de vida instantaneamente.', apply: p => { p.hp = Math.min(p.maxHp, p.hp + 20); } },
   ],
   raro: [
     { id: 'pierce1', name: 'Mandíbula Perfurante', family: 'Ofensivo', icon: '➹', desc: 'Projéteis atravessam todos os inimigos no caminho e o dano é dobrado.', apply: p => { p.pierce = Infinity; p.damage *= 2; } },
     { id: 'dash1', name: 'Salto de Gafanhoto', family: 'Mobilidade', icon: '↯', desc: '+25% velocidade e resposta.', apply: p => p.speed *= 1.25 },
     { id: 'shield1', name: 'Casulo Protetor', family: 'Defensivo', icon: '⬡', desc: 'Ganha um escudo que resiste a 10 tiros.', apply: p => p.shieldCharges += 10 },
+    { id: 'multi3', name: 'Enxame Duplo', family: 'Ofensivo', icon: '⋔', desc: '+1 projétil por disparo.', apply: p => p.multishot += 1 },
+    { id: 'bomb1', name: 'Bolsa de Esporos', family: 'Suporte', icon: '💣', desc: '+1 bomba.', apply: p => p.bombs = Math.min(3, p.bombs + 1) },
+    { id: 'regen3', name: 'Instinto de Cura', family: 'Defensivo', icon: '♥', desc: '+0,5 de regeneração de vida a cada 4s.', apply: p => p.regen += 0.5 },
   ],
   epico: [
     { id: 'drone1', name: 'Drone Operário', family: 'Suporte', icon: '✦', desc: 'Um aliado atira ao seu lado.', apply: p => p.drones += 1 },
     { id: 'triplo1', name: 'Tiro em Leque', family: 'Ofensivo', icon: '☴', desc: '+2 projéteis em ângulo.', apply: p => p.multishot += 2 },
     { id: 'aura1', name: 'Campo Feromônio', family: 'Defensivo', icon: '◎', desc: 'Aumenta o tamanho dos tiros.', apply: p => p.bulletRadius *= 1.5 },
+    { id: 'drone2', name: 'Enxame de Drones', family: 'Suporte', icon: '✦', desc: '+2 aliados que atiram ao seu lado.', apply: p => p.drones += 2 },
+    { id: 'dano4', name: 'Ferroada Potente', family: 'Ofensivo', icon: '⚔', desc: '+25% de dano.', apply: p => p.damage *= 1.25 },
+    { id: 'shield2', name: 'Muralha de Quitina', family: 'Defensivo', icon: '⬡', desc: 'Ganha um escudo que resiste a 20 tiros.', apply: p => p.shieldCharges += 20 },
   ],
   lendario: [
     { id: 'meteoro1', name: 'Chuva de Esporos', family: 'Ofensivo', icon: '☄', desc: 'A cada 30s, dispara em todas as direções.', apply: p => p.novaTimer = 0.001 },
     { id: 'hp2', name: 'Casca Reforçada', family: 'Defensivo', icon: '🛡', desc: '+40 de vida máxima.', apply: p => { p.maxHp += 40; p.hp += 40; } },
     { id: 'furia1', name: 'Fúria da Colmeia', family: 'Ofensivo', icon: '🔥', desc: '+30% de dano e cadência.', apply: p => { p.damage *= 1.3; p.fireRate *= 1.3; } },
     { id: 'fogo1', name: 'Chamas Predatórias', family: 'Ofensivo', icon: '🔥', desc: 'Inimigos atingidos pegam fogo: 1 de dano por segundo, por 10s.', apply: p => p.fireDamage = true },
+    { id: 'shatter1', name: 'Fragmentação Letal', family: 'Ofensivo', icon: '💢', desc: 'Inimigos mortos explodem, causando dano aos vizinhos.', apply: p => p.shatterOnKill = true },
+    { id: 'dano5', name: 'Fúria Predatória', family: 'Ofensivo', icon: '⚔', desc: '+35% de dano.', apply: p => p.damage *= 1.35 },
+    { id: 'shield3', name: 'Exoesqueleto Lendário', family: 'Defensivo', icon: '⬡', desc: 'Ganha um escudo que resiste a 15 tiros e +20 de vida máxima.', apply: p => { p.shieldCharges += 15; p.maxHp += 20; p.hp += 20; } },
   ],
   mitico: [
     { id: 'clone1', name: 'Clone Feromonal', family: 'Suporte', icon: '👥', desc: 'Um clone espelha seus tiros.', apply: p => p.clones += 1 },
     { id: 'homing1', name: 'Antenas Sensoriais', family: 'Ofensivo', icon: '◈', desc: 'Projéteis perseguem levemente os alvos.', apply: p => p.homing = true },
+    { id: 'clone2', name: 'Casulo Duplo', family: 'Suporte', icon: '👥', desc: '+1 clone que espelha seus tiros.', apply: p => p.clones += 1 },
+    { id: 'nucleo1', name: 'Núcleo Sobrecarregado', family: 'Ofensivo', icon: '💢', desc: '+50% de dano e +25% de cadência.', apply: p => { p.damage *= 1.5; p.fireRate *= 1.25; } },
+    { id: 'blindagem1', name: 'Blindagem Mítica', family: 'Defensivo', icon: '🛡', desc: '+60 de vida máxima e escudo de 10 cargas.', apply: p => { p.maxHp += 60; p.hp += 60; p.shieldCharges += 10; } },
   ],
   secreto: [
     { id: 'terceiro_olho', name: 'Terceiro Olho', family: 'Ofensivo', icon: '👁', desc: 'Mira automática perfeita + dano dobrado por 10s.', apply: p => { p.homing = true; p.damage *= 2; } },
+    { id: 'genetica1', name: 'Fúria Genética', family: 'Suporte', icon: '🧬', desc: '+2 drones e +2 clones.', apply: p => { p.drones += 2; p.clones += 2; } },
+    { id: 'metamorfose1', name: 'Metamorfose de Combate', family: 'Ofensivo', icon: '🦋', desc: '+50% de dano e cadência, permanentemente.', apply: p => { p.damage *= 1.5; p.fireRate *= 1.5; } },
+    { id: 'casulo_eterno1', name: 'Casulo Eterno', family: 'Defensivo', icon: '⬡', desc: 'Dobra a vida máxima e cura totalmente.', apply: p => { p.maxHp *= 2; p.hp = p.maxHp; } },
   ],
   divino: [
     { id: 'avatar1', name: 'Avatar do Enxame', family: 'Suporte', icon: '★', desc: 'Transformação: todos os stats +50%.', apply: p => { p.damage *= 1.5; p.fireRate *= 1.5; p.speed *= 1.5; p.maxHp *= 1.5; p.hp = p.maxHp; } },
     { id: 'laser1', name: 'Aguilhão Solar', family: 'Ofensivo', icon: '🔆', desc: 'Dispara um laser contínuo por 30s; depois atira normal por 30s, alternando para sempre.', apply: p => { p.laserMode = true; p.laserActive = true; p.laserTimer = 0; } },
+    { id: 'enxame_absoluto1', name: 'Enxame Absoluto', family: 'Suporte', icon: '👑', desc: '+3 drones e +2 clones.', apply: p => { p.drones += 3; p.clones += 2; } },
+    { id: 'furia_primordial1', name: 'Fúria Primordial', family: 'Ofensivo', icon: '🌋', desc: 'Dobra o dano e +50% de cadência.', apply: p => { p.damage *= 2; p.fireRate *= 1.5; } },
+    { id: 'nucleo_imortal1', name: 'Núcleo Imortal', family: 'Defensivo', icon: '💎', desc: '+100 de vida máxima, cura total e regeneração extra.', apply: p => { p.maxHp += 100; p.hp = p.maxHp; p.regen += 1; } },
   ],
 };
 
@@ -563,12 +587,15 @@ const SHOP_ITEMS = {
     { id: 'nave_c137', name: 'Disco C-137', exclusive: true, code: 'DIMENSAOC137', colors: { c1: '#D8CFBE', c2: '#5C554C', c3: '#E8B93A' } },
     { id: 'nave_jipe', name: 'Explorer do Parque', exclusive: true, code: 'ALLANGRANT', colors: { c1: '#8FBE6E', c2: '#8B2E2E', c3: '#E8B23A' } },
   ],
-  chefe: [
-    { id: 'chefe_padrao',   name: 'Nave-Mãe Padrão', price: 0,   colors: { main: '#FB923C', core: '#F472B6' } },
-    { id: 'chefe_sombrio',  name: 'Sombrio',         price: 150, colors: { main: '#6D28D9', core: '#A855F7' } },
-    { id: 'chefe_infernal', name: 'Infernal',        price: 180, colors: { main: '#DC2626', core: '#FF8A5B' } },
-    { id: 'chefe_glacial',  name: 'Glacial',         price: 180, colors: { main: '#38BDF8', core: '#E0F2FE' } },
-    { id: 'chefe_rainha',   name: 'Rainha Xenomorfa', exclusive: true, code: 'RAINHAALIENIGENA', colors: { main: '#111114', core: '#B6FF3D' } },
+  chefeMestra: [
+    { id: 'chefeM_padrao',   name: 'Mestra Padrão',    price: 0,   colors: { main: '#FB923C', core: '#F472B6' } },
+    { id: 'chefeM_infernal', name: 'Infernal',         price: 180, colors: { main: '#DC2626', core: '#FF8A5B' } },
+    { id: 'chefeM_rainha',   name: 'Rainha Xenomorfa', exclusive: true, code: 'RAINHAALIENIGENA', colors: { main: '#111114', core: '#B6FF3D' } },
+  ],
+  chefeMae: [
+    { id: 'chefeA_padrao',  name: 'Mãe Padrão', price: 0,   colors: { main: '#FB923C', core: '#F472B6' } },
+    { id: 'chefeA_sombrio', name: 'Sombrio',     price: 150, colors: { main: '#6D28D9', core: '#A855F7' } },
+    { id: 'chefeA_glacial', name: 'Glacial',     price: 180, colors: { main: '#38BDF8', core: '#E0F2FE' } },
   ],
   fundo: [
     { id: 'fundo_padrao',    name: 'Vazio Padrão',   price: 0,   grad: 'rgba(124,77,255,0.08)', base: '#0A0E14' },
@@ -582,6 +609,14 @@ const SHOP_ITEMS = {
     { id: 'tiro_grave',    name: 'Pulso Grave',    price: 60, wave: 'sawtooth', freq: 220,  dur: 0.08 },
     { id: 'tiro_agudo',    name: 'Chiado Agudo',   price: 60, wave: 'triangle', freq: 1600, dur: 0.04 },
     { id: 'tiro_pulso',    name: 'Pulso M41A',     exclusive: true, code: 'RIFLEDEPULSO', wave: 'sawtooth', freq: 140, dur: 0.05 },
+  ],
+  orbe: [
+    { id: 'orbe_padrao',    name: 'Drone Padrão',    price: 0,  colors: { main: '#A855F7', glow: '#A855F7' } },
+    { id: 'orbe_joaninha',  name: 'Joaninha',        price: 70, colors: { main: '#FF4757', glow: '#FF4757', accent: '#1A1A1A' } },
+    { id: 'orbe_vespa',     name: 'Vespa',           price: 70, colors: { main: '#FFD93D', glow: '#FFD93D', accent: '#1A1A1A' } },
+    { id: 'orbe_besouro',   name: 'Besouro Dourado', price: 90, colors: { main: '#FBBF24', glow: '#FDE68A' } },
+    { id: 'orbe_libelula',  name: 'Libélula',        price: 90, colors: { main: '#22D3EE', glow: '#A5F3FC' } },
+    { id: 'orbe_formiga',   name: 'Formiga de Fogo', price: 60, colors: { main: '#FF6B35', glow: '#FFB199' } },
   ],
   morte: [
     { id: 'morte_curta',    name: 'Explosão Curta', price: 0,  kind: 'noise-low',  dur: 0.18 },
@@ -609,7 +644,7 @@ const SHOP_ITEMS = {
   ],
   codigos: [],
 };
-const SHOP_CATEGORY_LABELS = { nave: 'NAVES', chefe: 'CHEFE', fundo: 'FUNDO', tiro: 'TIRO', morte: 'MORTE', musica: 'MÚSICA', derrota: 'DERROTA', vitoriaChefe: 'VITÓRIA CHEFE', codigos: 'CÓDIGOS' };
+const SHOP_CATEGORY_LABELS = { nave: 'NAVES', chefeMestra: 'CHEFE MESTRA', chefeMae: 'CHEFE MÃE', fundo: 'FUNDO', tiro: 'TIRO', orbe: 'ORBE', morte: 'MORTE', musica: 'MÚSICA', derrota: 'DERROTA', vitoriaChefe: 'VITÓRIA CHEFE', codigos: 'CÓDIGOS' };
 
 /* ---------- Sistema de códigos de resgate (itens exclusivos) ---------- */
 const REDEEM_CODES = {};
@@ -623,13 +658,13 @@ const redeemedCodes = [];
 let essencia = 0;
 let highScore = 0;
 const owned = {
-  nave: ['nave_padrao'], chefe: ['chefe_padrao'], fundo: ['fundo_padrao'],
-  tiro: ['tiro_classico'], morte: ['morte_curta'], musica: ['musica_silencio'],
+  nave: ['nave_padrao'], chefeMestra: ['chefeM_padrao'], chefeMae: ['chefeA_padrao'], fundo: ['fundo_padrao'],
+  tiro: ['tiro_classico'], orbe: ['orbe_padrao'], morte: ['morte_curta'], musica: ['musica_silencio'],
   derrota: ['derrota_padrao'], vitoriaChefe: ['vitoria_padrao'],
 };
 const equipped = {
-  nave: 'nave_padrao', chefe: 'chefe_padrao', fundo: 'fundo_padrao',
-  tiro: 'tiro_classico', morte: 'morte_curta', musica: 'musica_silencio',
+  nave: 'nave_padrao', chefeMestra: 'chefeM_padrao', chefeMae: 'chefeA_padrao', fundo: 'fundo_padrao',
+  tiro: 'tiro_classico', orbe: 'orbe_padrao', morte: 'morte_curta', musica: 'musica_silencio',
   derrota: 'derrota_padrao', vitoriaChefe: 'vitoria_padrao',
 };
 function getEquippedItem(cat) { return SHOP_ITEMS[cat].find(i => i.id === equipped[cat]); }
@@ -787,8 +822,9 @@ let activeShopTab = 'nave';
 
 function swatchStyle(cat, item) {
   if (cat === 'nave') return item.colors.c2;
-  if (cat === 'chefe') return item.colors.main;
+  if (cat === 'chefeMestra' || cat === 'chefeMae') return item.colors.main;
   if (cat === 'fundo') return item.base;
+  if (cat === 'orbe') return item.colors.main;
   return '#161C28';
 }
 function renderShop() {
@@ -952,6 +988,7 @@ const upgradeOverlay = document.getElementById('upgradeOverlay');
 const cardRow = document.getElementById('cardRow');
 const finalScoreEl = document.getElementById('finalScore');
 const bossBarWrap = document.getElementById('bossBarWrap');
+const bossNameEl = document.getElementById('bossName');
 const bossFill = document.getElementById('bossFill');
 const bombCountEl = document.getElementById('bombCount');
 const bombBtn = document.getElementById('bombBtn');
@@ -985,7 +1022,7 @@ let items = [];
 
 const player = {
   x: 0, y: 0, w: 30, h: 30,
-  hp: 30, maxHp: 30,
+  hp: 40, maxHp: 40,
   speed: 340,
   damage: 5,
   fireRate: 3, // tiros por segundo
@@ -1006,6 +1043,7 @@ const player = {
   laserMode: false,
   laserActive: false,
   laserTimer: 0,
+  shatterOnKill: false,
 };
 
 let bullets = [];
@@ -1014,7 +1052,7 @@ let enemies = [];
 let particles = [];
 
 const stats = {
-  kills: { mosquito: 0, besouro: 0, vespa: 0 },
+  kills: { mosquito: 0, besouro: 0, vespa: 0, aranha: 0, escaravelho: 0, formiga: 0, libelula: 0 },
   bossesKilled: 0,
   bombsUsed: 0,
   damageTaken: 0,
@@ -1025,7 +1063,7 @@ const stats = {
 };
 
 function resetStats() {
-  stats.kills.mosquito = 0; stats.kills.besouro = 0; stats.kills.vespa = 0;
+  Object.keys(stats.kills).forEach(k => { stats.kills[k] = 0; });
   stats.bossesKilled = 0; stats.bombsUsed = 0; stats.damageTaken = 0;
   stats.upgradesCollected = 0; stats.maxWave = 1; stats.timeSurvived = 0; stats.itemsCollected = 0;
 }
@@ -1037,10 +1075,11 @@ function resetGame() {
   bossBarWrap.classList.add('hidden');
   Object.assign(player, {
     x: canvas.width / 2, y: canvas.height - 90, w: 30, h: 30,
-    hp: 30, maxHp: 30, speed: 340, damage: 5, fireRate: 3,
+    hp: 40, maxHp: 40, speed: 340, damage: 5, fireRate: 3,
     multishot: 1, pierce: 0, regen: 0, regenAcc: 0, shieldCharges: 0,
     drones: 0, clones: 0, slowAura: false, homing: false, novaTimer: 0, fireAcc: 0,
     bombs: 0, bulletRadius: 4, fireDamage: false, laserMode: false, laserActive: false, laserTimer: 0,
+    shatterOnKill: false,
   });
   rng.pity = 0; rng.activeTriggers.clear();
   for (const k in pickedFamilies) delete pickedFamilies[k];
@@ -1156,35 +1195,55 @@ joystickZone.addEventListener('touchend', pointerUp);
    5) INIMIGOS
    ============================================================ */
 const ENEMY_TYPES = {
-  mosquito: { hp: 6,  speed: 130, w: 18, h: 18, color: '#7C4DFF', score: 20, shoots: false },
-  besouro:  { hp: 26, speed: 55,  w: 34, h: 34, color: '#4ADE80', score: 45, shoots: false },
-  vespa:    { hp: 14, speed: 90,  w: 22, h: 22, color: '#FF4757', score: 35, shoots: true },
+  mosquito:    { hp: 6,  speed: 130, w: 18, h: 18, color: '#7C4DFF', score: 20, shoots: false },
+  besouro:     { hp: 26, speed: 55,  w: 34, h: 34, color: '#4ADE80', score: 45, shoots: false },
+  vespa:       { hp: 14, speed: 90,  w: 22, h: 22, color: '#FF4757', score: 35, shoots: true },
+  aranha:      { hp: 9,  speed: 175, w: 20, h: 20, color: '#F472B6', score: 28, shoots: false, erratic: true },
+  escaravelho: { hp: 65, speed: 32,  w: 42, h: 42, color: '#78716C', score: 75, shoots: false },
+  formiga:     { hp: 17, speed: 100, w: 22, h: 24, color: '#FB923C', score: 42, shoots: true, burst: 3 },
+  libelula:    { hp: 11, speed: 150, w: 20, h: 26, color: '#22D3EE', score: 38, shoots: true, erratic: true },
 };
 
 function spawnEnemy() {
   const roll = Math.random();
-  const type = roll < 0.5 ? 'mosquito' : roll < 0.8 ? 'besouro' : 'vespa';
+  let type;
+  if (elapsed < 35) {
+    // início mais tranquilo: só os 3 tipos clássicos
+    type = roll < 0.5 ? 'mosquito' : roll < 0.8 ? 'besouro' : 'vespa';
+  } else {
+    type = roll < 0.28 ? 'mosquito'
+      : roll < 0.44 ? 'besouro'
+      : roll < 0.6 ? 'vespa'
+      : roll < 0.72 ? 'aranha'
+      : roll < 0.83 ? 'formiga'
+      : roll < 0.93 ? 'libelula'
+      : 'escaravelho';
+  }
   const t = ENEMY_TYPES[type];
-  const diffMul = 1 + Math.min(elapsed / 90, 1.6); // dificuldade cresce com o tempo
+  const diffMul = 1 + Math.min(elapsed / 130, 1.1); // dificuldade cresce com o tempo, mais devagar
   enemies.push({
     type, x: Math.random() * (canvas.width - t.w) + t.w / 2, y: -t.h,
     w: t.w, h: t.h, hp: t.hp * diffMul, maxHp: t.hp * diffMul,
-    speed: t.speed * (1 + Math.min(elapsed / 140, 0.7)),
-    color: t.color, scoreVal: t.score, shoots: t.shoots,
+    speed: t.speed * (1 + Math.min(elapsed / 190, 0.45)),
+    color: t.color, scoreVal: t.score, shoots: t.shoots, erratic: !!t.erratic, burst: t.burst || 0,
     shootAcc: Math.random() * 2, phase: Math.random() * Math.PI * 2,
   });
 }
 
-/* ---------- Chefe (Nave-Mãe), a cada 1000 pontos ---------- */
+/* ---------- Chefe: Nave Mestra ou Nave Mãe, a cada 1000 pontos ---------- */
 function spawnBoss() {
   const bossNumber = Math.round(nextBossAt / 1000);
-  const hp = 260 + bossNumber * 140;
+  const type = Math.random() < 0.5 ? 'mestra' : 'mae';
+  const baseHp = 260 + bossNumber * 140;
+  const hp = type === 'mestra' ? baseHp * 2.6 : baseHp;
   boss = {
+    type,
     x: canvas.width / 2, y: -80, targetY: 110,
     w: 90, h: 90, hp, maxHp: hp,
     speed: 60, dir: 1, shootAcc: 0, phase: 0,
     scoreVal: 500 + bossNumber * 100,
   };
+  bossNameEl.textContent = type === 'mestra' ? 'NAVE MESTRA' : 'NAVE-MÃE';
   bossBarWrap.classList.remove('hidden');
 }
 
@@ -1348,10 +1407,14 @@ function update(dt) {
     if (player.fireAcc >= interval) { player.fireAcc = 0; shoot(); }
   }
 
-  // spawn de inimigos
-  spawnTimer -= dt;
-  const spawnInterval = Math.max(0.35, 1.1 - elapsed / 100);
-  if (spawnTimer <= 0) { spawnEnemy(); spawnTimer = spawnInterval; }
+  // spawn de inimigos (Nave Mestra: ninguém mais aparece / Nave Mãe: reforços extras)
+  if (!boss || boss.type === 'mae') {
+    spawnTimer -= dt;
+    const spawnInterval = boss && boss.type === 'mae'
+      ? Math.max(0.32, 0.7 - elapsed / 320)
+      : Math.max(0.5, 1.3 - elapsed / 120);
+    if (spawnTimer <= 0) { spawnEnemy(); spawnTimer = spawnInterval; }
+  }
 
   // update de balas do player
   bullets = bullets.filter(b => b.life > 0);
@@ -1365,7 +1428,9 @@ function update(dt) {
   enemies.forEach(en => {
     en.phase += dt;
     const slowMul = player.slowAura ? 0.8 : 1;
-    en.x += Math.sin(en.phase * 1.6) * 26 * dt;
+    const amp = en.erratic ? 60 : 26;
+    const freq = en.erratic ? 3.4 : 1.6;
+    en.x += Math.sin(en.phase * freq) * amp * dt;
     en.y += en.speed * slowMul * dt;
     if (en.burning > 0) {
       en.burning -= dt;
@@ -1377,7 +1442,15 @@ function update(dt) {
       if (en.shootAcc <= 0 && en.y > 0) {
         en.shootAcc = 1.6;
         const dx = player.x - en.x, dy = player.y - en.y, d = Math.hypot(dx, dy) || 1;
-        enemyBullets.push({ x: en.x, y: en.y, vx: (dx / d) * 260, vy: (dy / d) * 260, life: 2.2 });
+        if (en.burst > 1) {
+          const baseAngle = Math.atan2(dy, dx);
+          for (let i = 0; i < en.burst; i++) {
+            const a = baseAngle + (i - (en.burst - 1) / 2) * 0.26;
+            enemyBullets.push({ x: en.x, y: en.y, vx: Math.cos(a) * 260, vy: Math.sin(a) * 260, life: 2.2 });
+          }
+        } else {
+          enemyBullets.push({ x: en.x, y: en.y, vx: (dx / d) * 260, vy: (dy / d) * 260, life: 2.2 });
+        }
       }
     }
   });
@@ -1437,6 +1510,19 @@ function update(dt) {
     spawnParticles(en.x, en.y, en.color, 12);
     maybeDropItem(en.x, en.y);
     playDeathSound();
+    if (player.shatterOnKill) {
+      enemies.forEach(other => {
+        if (other !== en && other.hp > 0) {
+          const d = Math.hypot(other.x - en.x, other.y - en.y);
+          if (d < 70) other.hp -= player.damage * 0.6;
+        }
+      });
+      if (boss) {
+        const db = Math.hypot(boss.x - en.x, boss.y - en.y);
+        if (db < 70) boss.hp -= player.damage * 0.6;
+      }
+      spawnParticles(en.x, en.y, '#FFB84D', 6);
+    }
   });
   enemies = enemies.filter(en => en.hp > 0);
 
@@ -1457,10 +1543,18 @@ function update(dt) {
 
     boss.shootAcc -= dt;
     if (boss.shootAcc <= 0 && boss.y >= boss.targetY - 4) {
-      boss.shootAcc = 0.9;
-      for (let i = -2; i <= 2; i++) {
-        const angle = Math.PI / 2 + i * 0.22;
-        enemyBullets.push({ x: boss.x, y: boss.y, vx: Math.cos(angle) * 220, vy: Math.sin(angle) * 220, life: 2.5 });
+      if (boss.type === 'mestra') {
+        boss.shootAcc = 0.62;
+        for (let i = -2; i <= 2; i++) {
+          const angle = Math.PI / 2 + i * 0.2;
+          enemyBullets.push({ x: boss.x, y: boss.y, vx: Math.cos(angle) * 220, vy: Math.sin(angle) * 220, life: 2.5 });
+        }
+      } else {
+        boss.shootAcc = 2.6;
+        for (let i = -1; i <= 1; i++) {
+          const angle = Math.PI / 2 + i * 0.22;
+          enemyBullets.push({ x: boss.x, y: boss.y, vx: Math.cos(angle) * 200, vy: Math.sin(angle) * 200, life: 2.5 });
+        }
       }
     }
 
@@ -1476,7 +1570,7 @@ function update(dt) {
     } else {
       bossFill.style.width = `${Math.max(0, boss.hp / boss.maxHp * 100)}%`;
       const d = Math.hypot(boss.x - player.x, boss.y - player.y);
-      if (d < boss.w / 2 + player.w / 2) { player.hp -= 14; stats.damageTaken += 14; spawnParticles(player.x, player.y, '#FF4757', 10); noDamageTimer = 0; }
+      if (d < boss.w / 2 + player.w / 2) { player.hp -= 10; stats.damageTaken += 10; spawnParticles(player.x, player.y, '#FF4757', 10); noDamageTimer = 0; }
     }
   }
 
@@ -1497,7 +1591,7 @@ function update(dt) {
   // colisão: inimigo x player / bala inimiga x player
   const hitPlayer = () => {
     if (player.shieldCharges > 0) { player.shieldCharges -= 1; spawnParticles(player.x, player.y, '#38BDF8', 14); }
-    else { player.hp -= 8; stats.damageTaken += 8; spawnParticles(player.x, player.y, '#FF4757', 14); }
+    else { player.hp -= 6; stats.damageTaken += 6; spawnParticles(player.x, player.y, '#FF4757', 14); }
     noDamageTimer = 0;
   };
   enemies.forEach(en => {
@@ -1851,7 +1945,7 @@ function drawEnemyShip(ctx, type, w, h, color) {
     ctx.fillRect(-w * 0.3, -h * 0.05, w * 0.6, h * 0.12);
     ctx.fillStyle = '#0A0E14';
     ctx.beginPath(); ctx.ellipse(0, h * 0.05, w * 0.1, h * 0.14, 0, 0, 7); ctx.fill();
-  } else {
+  } else if (type === 'vespa') {
     // vespa: gunship com dois canhões laterais
     ctx.beginPath();
     ctx.moveTo(0, -h * 0.55);
@@ -1865,12 +1959,82 @@ function drawEnemyShip(ctx, type, w, h, color) {
     ctx.fillRect(w * 0.33, h * 0.02, w * 0.22, h * 0.14);
     ctx.fillStyle = '#0A0E14';
     ctx.beginPath(); ctx.ellipse(0, -h * 0.08, w * 0.07, h * 0.13, 0, 0, 7); ctx.fill();
+  } else if (type === 'aranha') {
+    // interceptor em forma de estrela/cruz, rápido e errático
+    ctx.beginPath();
+    ctx.moveTo(0, -h * 0.5);
+    ctx.lineTo(w * 0.12, -h * 0.06);
+    ctx.lineTo(w * 0.5, 0);
+    ctx.lineTo(w * 0.12, h * 0.08);
+    ctx.lineTo(0, h * 0.5);
+    ctx.lineTo(-w * 0.12, h * 0.08);
+    ctx.lineTo(-w * 0.5, 0);
+    ctx.lineTo(-w * 0.12, -h * 0.06);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#0A0E14';
+    ctx.beginPath(); ctx.ellipse(0, 0, w * 0.09, h * 0.11, 0, 0, 7); ctx.fill();
+  } else if (type === 'escaravelho') {
+    // casco pesado e blindado, hexagonal
+    ctx.beginPath();
+    ctx.moveTo(-w * 0.22, -h * 0.5);
+    ctx.lineTo(w * 0.22, -h * 0.5);
+    ctx.lineTo(w * 0.5, -h * 0.05);
+    ctx.lineTo(w * 0.5, h * 0.25);
+    ctx.lineTo(w * 0.22, h * 0.5);
+    ctx.lineTo(-w * 0.22, h * 0.5);
+    ctx.lineTo(-w * 0.5, h * 0.25);
+    ctx.lineTo(-w * 0.5, -h * 0.05);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(-w * 0.35, -h * 0.15, w * 0.7, h * 0.1);
+    ctx.fillRect(-w * 0.35, h * 0.05, w * 0.7, h * 0.1);
+    ctx.fillStyle = '#0A0E14';
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.02, w * 0.12, h * 0.15, 0, 0, 7); ctx.fill();
+  } else if (type === 'formiga') {
+    // corpo em 3 segmentos (cabeça / tórax / abdômen) com pernas
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(1, w * 0.05);
+    [-1, 0, 1].forEach(i => {
+      ctx.beginPath(); ctx.moveTo(-w * 0.14, i * h * 0.12); ctx.lineTo(-w * 0.5, i * h * 0.16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(w * 0.14, i * h * 0.12); ctx.lineTo(w * 0.5, i * h * 0.16); ctx.stroke();
+    });
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.32, w * 0.16, h * 0.16, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.02, w * 0.19, h * 0.19, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, h * 0.32, w * 0.26, h * 0.28, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#0A0E14';
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.32, w * 0.07, h * 0.08, 0, 0, 7); ctx.fill();
+  } else if (type === 'libelula') {
+    // corpo fino e alongado com 4 asas translúcidas, veloz
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.ellipse(-w * 0.32, -h * 0.1, w * 0.28, h * 0.1, -0.3, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(w * 0.32, -h * 0.1, w * 0.28, h * 0.1, 0.3, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(-w * 0.28, h * 0.12, w * 0.24, h * 0.09, 0.25, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(w * 0.28, h * 0.12, w * 0.24, h * 0.09, -0.25, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.ellipse(0, 0, w * 0.08, h * 0.5, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#0A0E14';
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.36, w * 0.09, h * 0.09, 0, 0, 7); ctx.fill();
+  } else {
+    // mosquito (padrão): interceptor fino e comprido
+    ctx.beginPath();
+    ctx.moveTo(0, -h * 0.55);
+    ctx.lineTo(w * 0.14, h * 0.1);
+    ctx.lineTo(w * 0.5, h * 0.3);
+    ctx.lineTo(w * 0.08, h * 0.2);
+    ctx.lineTo(0, h * 0.55);
+    ctx.lineTo(-w * 0.08, h * 0.2);
+    ctx.lineTo(-w * 0.5, h * 0.3);
+    ctx.lineTo(-w * 0.14, h * 0.1);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#0A0E14';
+    ctx.beginPath(); ctx.ellipse(0, -h * 0.1, w * 0.07, h * 0.14, 0, 0, 7); ctx.fill();
   }
   ctx.shadowBlur = 0;
 }
 
 function drawBossShip(ctx, w, h, phase) {
-  const skin = getEquippedItem('chefe').colors;
+  const cat = boss && boss.type === 'mae' ? 'chefeMae' : 'chefeMestra';
+  const skin = getEquippedItem(cat).colors;
   const glow = 0.7 + Math.sin(phase * 4) * 0.3;
   ctx.shadowColor = skin.main; ctx.shadowBlur = 20 * glow;
   ctx.fillStyle = skin.main;
@@ -1952,7 +2116,7 @@ function draw() {
   // balas
   ctx.fillStyle = '#39FF88'; ctx.shadowColor = '#39FF88'; ctx.shadowBlur = 8;
   bullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, player.bulletRadius, 0, 7); ctx.fill(); });
-  ctx.fillStyle = '#FF4757'; ctx.shadowColor = '#FF4757';
+  ctx.fillStyle = '#FF4757'; ctx.shadowColor = '#FF4757'; ctx.shadowBlur = 8;
   enemyBullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, 7); ctx.fill(); });
   ctx.shadowBlur = 0;
 
@@ -1982,10 +2146,128 @@ function draw() {
   ctx.restore();
   ctx.shadowBlur = 0;
 
-  // drones/clones visuais
+  drawDronesAndClones(ctx);
+}
+
+function drawOrbeInsect(ctx, x, y, id, colors) {
+  const main = colors.main, glow = colors.glow, accent = colors.accent || '#1A1A1A';
+  const flap = Math.sin(elapsed * 14 + x) * 0.5 + 0.5; // 0..1 para bater de asa
+  ctx.shadowColor = glow; ctx.shadowBlur = 7;
+
+  if (id === 'orbe_joaninha') {
+    // cabeça
+    ctx.fillStyle = accent;
+    ctx.beginPath(); ctx.ellipse(x, y - 5.5, 2.6, 2.2, 0, 0, 7); ctx.fill();
+    // élitros (corpo em cúpula)
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y + 1, 6, 6.5, 0, 0, 7); ctx.fill();
+    // linha central dividindo as asas
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = accent; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x, y + 7); ctx.stroke();
+    // manchas
+    ctx.fillStyle = accent;
+    [[-3, -1], [3, -1], [-2.5, 3.5], [2.5, 3.5], [0, 1.5]].forEach(([ax, ay]) => {
+      ctx.beginPath(); ctx.ellipse(x + ax, y + ay, 1, 1, 0, 0, 7); ctx.fill();
+    });
+  } else if (id === 'orbe_vespa') {
+    // asas (batendo)
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = '#E5F3FF';
+    const wingSpread = 4 + flap * 2;
+    ctx.beginPath(); ctx.ellipse(x - wingSpread, y - 1, 4.5, 2, -0.4, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + wingSpread, y - 1, 4.5, 2, 0.4, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+    // abdômen (listrado)
+    ctx.shadowColor = glow; ctx.shadowBlur = 7;
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y + 3, 3.4, 5, 0, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = accent;
+    [1.5, 4, 6.5].forEach(dy2 => {
+      ctx.beginPath(); ctx.ellipse(x, y + dy2, 3.2, 0.9, 0, 0, 7); ctx.fill();
+    });
+    // tórax + cabeça
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y - 2.5, 2, 2, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = accent;
+    ctx.beginPath(); ctx.ellipse(x, y - 5.5, 1.8, 1.8, 0, 0, 7); ctx.fill();
+  } else if (id === 'orbe_besouro') {
+    // pernas curtas
+    ctx.strokeStyle = accent; ctx.lineWidth = 1;
+    [-1, 0, 1].forEach(i => {
+      ctx.beginPath(); ctx.moveTo(x - 5, y + i * 3); ctx.lineTo(x - 8, y + i * 3.6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 5, y + i * 3); ctx.lineTo(x + 8, y + i * 3.6); ctx.stroke();
+    });
+    // carapaça brilhante
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y, 5.6, 7, 0, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, y - 6); ctx.lineTo(x, y + 6); ctx.stroke();
+    // brilho
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.beginPath(); ctx.ellipse(x - 1.6, y - 3, 1.4, 2, -0.3, 0, 7); ctx.fill();
+    // cabeça
+    ctx.fillStyle = accent;
+    ctx.beginPath(); ctx.ellipse(x, y - 6.4, 1.8, 1.6, 0, 0, 7); ctx.fill();
+  } else if (id === 'orbe_libelula') {
+    // asas grandes translúcidas
+    ctx.globalAlpha = 0.4 + flap * 0.15;
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x - 6, y - 3, 6, 2.2, -0.25, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 6, y - 3, 6, 2.2, 0.25, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x - 5.5, y + 1.5, 5, 1.8, 0.2, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 5.5, y + 1.5, 5, 1.8, -0.2, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+    // corpo longo e fino segmentado
+    ctx.shadowColor = glow; ctx.shadowBlur = 7;
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y + 3.5, 1.4, 6.5, 0, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    // cabeça com olhos grandes
+    ctx.fillStyle = accent === '#1A1A1A' ? '#0F1720' : accent;
+    ctx.beginPath(); ctx.ellipse(x - 1.6, y - 5, 1.6, 1.6, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 1.6, y - 5, 1.6, 1.6, 0, 0, 7); ctx.fill();
+  } else if (id === 'orbe_formiga') {
+    // pernas
+    ctx.strokeStyle = accent || '#7A2E10'; ctx.lineWidth = 1;
+    [-1.5, 1.5].forEach(dy2 => {
+      ctx.beginPath(); ctx.moveTo(x - 3, y + dy2); ctx.lineTo(x - 7, y + dy2 - 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + 3, y + dy2); ctx.lineTo(x + 7, y + dy2 - 2); ctx.stroke();
+    });
+    // abdômen grande atrás
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y + 4.5, 3.6, 4, 0, 0, 7); ctx.fill();
+    // "cintura" fina
+    ctx.beginPath(); ctx.ellipse(x, y + 0.5, 1, 1, 0, 0, 7); ctx.fill();
+    // tórax
+    ctx.beginPath(); ctx.ellipse(x, y - 2, 2.4, 2.6, 0, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    // cabeça + antenas
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y - 5.5, 2.2, 2, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = main; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(x - 1, y - 7); ctx.lineTo(x - 3, y - 9.5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 1, y - 7); ctx.lineTo(x + 3, y - 9.5); ctx.stroke();
+  } else {
+    // drone padrão (mecânico, não-inseto)
+    ctx.fillStyle = main;
+    ctx.beginPath(); ctx.ellipse(x, y, 6, 7, 0, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = 1;
+}
+
+/* ---------- drones/clones visuais ---------- */
+function drawDronesAndClones(ctx) {
+  const orbeItem = getEquippedItem('orbe');
   for (let d = 0; d < player.drones; d++) {
     const ox = (d % 2 === 0 ? -1 : 1) * (26 + 14 * Math.floor(d / 2));
-    ctx.fillStyle = '#A855F7'; ctx.beginPath(); ctx.arc(player.x + ox, player.y, 5, 0, 7); ctx.fill();
+    drawOrbeInsect(ctx, player.x + ox, player.y, orbeItem.id, orbeItem.colors);
   }
   for (let c = 0; c < player.clones; c++) {
     const ox = (c % 2 === 0 ? -1 : 1) * (60 + 20 * Math.floor(c / 2));
@@ -2004,14 +2286,13 @@ function formatTime(sec) {
 }
 
 function renderStatsPanel() {
-  const totalKills = stats.kills.mosquito + stats.kills.besouro + stats.kills.vespa;
+  const totalKills = Object.values(stats.kills).reduce((a, b) => a + b, 0);
   const rows = [
     { label: 'MELHOR PONTUAÇÃO', val: highScore, cls: 'gold' },
     { label: 'TEMPO SOBREVIVIDO', val: formatTime(stats.timeSurvived), cls: 'hl' },
     { label: 'ONDA MÁXIMA', val: stats.maxWave, cls: 'hl' },
     { label: 'INIMIGOS ABATIDOS', val: totalKills, cls: '' },
     { label: 'CHEFES DERROTADOS', val: stats.bossesKilled, cls: 'hl' },
-    { label: 'MOSQUITOS / BESOUROS / VESPAS', val: `${stats.kills.mosquito} / ${stats.kills.besouro} / ${stats.kills.vespa}`, cls: '' },
     { label: 'EVOLUÇÕES ESCOLHIDAS', val: stats.upgradesCollected, cls: '' },
     { label: 'ITENS COLETADOS', val: stats.itemsCollected, cls: '' },
     { label: 'BOMBAS USADAS', val: stats.bombsUsed, cls: '' },
